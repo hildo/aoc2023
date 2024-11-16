@@ -17,7 +17,6 @@ fn calibrate(input_file_name: &str) -> u128 {
     if let Ok(lines) = helpers::read_lines(input_file_name) {
         // Consumes the iterator, returns an (Optional) String
         for line in lines.flatten() {
-            println!("so far; {}", return_value);
             return_value = return_value + recover_value(&line);
         }
     }
