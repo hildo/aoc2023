@@ -64,12 +64,12 @@ mod tests {
 
     #[test]
     fn test_simple() {
-        assert_eq!(calibrate(".\\src\\resources\\day01_simple.txt"), 142);
+        assert_eq!(calibrate("./src/resources/day01_simple.txt"), 142);
     }
 
     #[test]
     fn test_less_simple() {
-        assert_eq!(calibrate(".\\src\\resources\\day01_less_simple.txt"), 281);
+        assert_eq!(calibrate("./src/resources/day01_less_simple.txt"), 281);
     }
 
     
@@ -92,7 +92,7 @@ mod tests {
 
     #[test]
     fn test_large() {
-        let value = calibrate(".\\src\\resources\\day01_input.txt");
+        let value = calibrate("./src/resources/day01_input.txt");
         println!("{}", value);
     }
 
