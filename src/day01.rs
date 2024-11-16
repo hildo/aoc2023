@@ -1,6 +1,4 @@
-use std::fs::File;
-use std::io::{self, BufRead};
-use std::path::Path;
+use crate::helpers;
 
 static WORDS_TO_NUMBERS: &[(&str, &str)] = &[
     ("one", "1"),
@@ -14,15 +12,9 @@ static WORDS_TO_NUMBERS: &[(&str, &str)] = &[
     ("nine", "9")
 ];
 
-fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
-where P: AsRef<Path>, {
-    let file = File::open(filename)?;
-    Ok(io::BufReader::new(file).lines())
-}
-
 fn calibrate(input_file_name: &str) -> u128 {
     let mut return_value = 0;
-    if let Ok(lines) = read_lines(input_file_name) {
+    if let Ok(lines) = helpers::read_lines(input_file_name) {
         // Consumes the iterator, returns an (Optional) String
         for line in lines.flatten() {
             println!("so far; {}", return_value);
