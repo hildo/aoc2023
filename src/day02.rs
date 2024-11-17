@@ -44,7 +44,7 @@ fn load_sample(input: &str) -> Vec<Sample> {
 }
 
 fn load_games(file_name: &str) -> Vec<Game> {
-    static GAME_RE: Lazy<Regex> = Lazy::new(|| Regex::new(r"Game (?<id>.)+: (?<samples>.*)").unwrap());
+    static GAME_RE: Lazy<Regex> = Lazy::new(|| Regex::new(r"Game (?<id>\d+): (?<samples>.*)").unwrap());
     let mut return_value = Vec::new();
     if let Ok(lines) = helpers::read_lines(file_name) {
         // Consumes the iterator, returns an (Optional) String
@@ -65,9 +65,52 @@ fn load_games(file_name: &str) -> Vec<Game> {
     return_value
 }
 
+fn id_sum_of_possible_games(configuration: Sample, games: Vec<Game>) -> u32 {
+    let mut sum = 0;
+    games.iter()
+        .filter(|game| {
+            let mut ret_val = true;
+            for sample in &game.samples {
+                if sample.red > configuration.red || sample.green > configuration.green || sample.blue > configuration.blue {
+                    ret_val = false;
+                    break;
+                }
+            }
+            ret_val
+        }).for_each(|game| sum += game.id);
+    sum
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn sample_is_possible() {
+        let configuration= Sample {
+            red: 12, 
+            green: 13,
+            blue: 14
+        };
+        let games = load_games("./src/resources/day02_simple.txt");
+        let sum = id_sum_of_possible_games(configuration, games);
+        
+        print!("Sum is {}", sum);
+        assert_eq!(sum, 8);
+    }
+
+    #[test]
+    fn is_possible() {
+        let configuration= Sample {
+            red: 12, 
+            green: 13,
+            blue: 14
+        };
+        let games = load_games("./src/resources/day02_input.txt");
+        let sum = id_sum_of_possible_games(configuration, games);
+        
+        print!("Sum is {}", sum);
+    }
 
     #[test]
     fn test_load_games() {
