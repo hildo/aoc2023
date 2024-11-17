@@ -69,42 +69,20 @@ fn id_sum_of_possible_games(configuration: Sample, games: Vec<Game>) -> u32 {
     let mut sum = 0;
     games.iter()
         .filter(|game| {
-            let mut ret_val = true;
-            for sample in &game.samples {
-                if sample.red > configuration.red || sample.green > configuration.green || sample.blue > configuration.blue {
-                    ret_val = false;
-                    break;
-                }
-            }
-            ret_val
+            game.samples.iter()
+                .map(|sample| sample.red <= configuration.red && sample.green <= configuration.green && sample.blue <= configuration.blue) 
+                .all(|valid_sample| valid_sample == true)
         }).for_each(|game| sum += game.id);
     sum
 }
 
 fn min_configuration(game: Game) -> Sample {
-    let max_red = game.samples.iter().map(|sample| sample.red).fold(0, | acc, value| {
-        if value > acc {
-            value
-        } else {
-            acc
-        }
-    });
-    let max_green = game.samples.iter().map(|sample| sample.green).fold(0, | acc, value| {
-        if value > acc {
-            value
-        } else {
-            acc
-        }
-    });
-    let max_blue = game.samples.iter().map(|sample| sample.blue).fold(0, | acc, value| {
-        if value > acc {
-            value
-        } else {
-            acc
-        }
-    });
-
-    Sample{red: max_red, green: max_green, blue: max_blue}
+    game.samples.iter().fold(Sample{red: 0, green: 0, blue: 0}, |acc, sample| {
+        let my_red = if sample.red > acc.red { sample.red } else { acc.red };
+        let my_green = if sample.green > acc.green { sample.green } else { acc.green };
+        let my_blue = if sample.blue > acc.blue { sample.blue } else { acc.blue };
+        Sample{red: my_red, green: my_green, blue: my_blue}
+    })
 }
 
 fn power_of_minimum_set(games: Vec<Game>) -> u32 {
