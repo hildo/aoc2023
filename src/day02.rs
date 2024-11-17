@@ -81,9 +81,61 @@ fn id_sum_of_possible_games(configuration: Sample, games: Vec<Game>) -> u32 {
     sum
 }
 
+fn min_configuration(game: Game) -> Sample {
+    let max_red = game.samples.iter().map(|sample| sample.red).fold(0, | acc, value| {
+        if value > acc {
+            value
+        } else {
+            acc
+        }
+    });
+    let max_green = game.samples.iter().map(|sample| sample.green).fold(0, | acc, value| {
+        if value > acc {
+            value
+        } else {
+            acc
+        }
+    });
+    let max_blue = game.samples.iter().map(|sample| sample.blue).fold(0, | acc, value| {
+        if value > acc {
+            value
+        } else {
+            acc
+        }
+    });
+
+    Sample{red: max_red, green: max_green, blue: max_blue}
+}
+
+fn power_of_minimum_set(games: Vec<Game>) -> u32 {
+    let mut ret_val = 0;
+    for game in games {
+        let min_config = min_configuration(game);
+        ret_val += min_config.red * min_config.green * min_config.blue;
+    }
+    ret_val
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn sample_power_of_mins() {
+        let games = load_games("./src/resources/day02_simple.txt");
+        let value = power_of_minimum_set(games);
+        
+        print!("Value is {}", value);
+        assert_eq!(value, 2286);
+    }
+
+    #[test]
+    fn power_of_mins() {
+        let games = load_games("./src/resources/day02_input.txt");
+        let value = power_of_minimum_set(games);
+        
+        print!("Value is {}", value);
+    }
 
     #[test]
     fn sample_is_possible() {
