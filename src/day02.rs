@@ -65,18 +65,16 @@ fn load_games(file_name: &str) -> Vec<Game> {
     return_value
 }
 
-fn id_sum_of_possible_games(configuration: Sample, games: Vec<Game>) -> u32 {
-    let mut sum = 0;
+fn id_sum_of_possible_games(configuration: &Sample, games: &Vec<Game>) -> u32 {
     games.iter()
         .filter(|game| {
             game.samples.iter()
                 .map(|sample| sample.red <= configuration.red && sample.green <= configuration.green && sample.blue <= configuration.blue) 
                 .all(|valid_sample| valid_sample == true)
-        }).for_each(|game| sum += game.id);
-    sum
+        }).fold(0, |acc, game| acc + game.id)
 }
 
-fn min_configuration(game: Game) -> Sample {
+fn min_configuration(game: &Game) -> Sample {
     game.samples.iter().fold(Sample{red: 0, green: 0, blue: 0}, |acc, sample| {
         let my_red = if sample.red > acc.red { sample.red } else { acc.red };
         let my_green = if sample.green > acc.green { sample.green } else { acc.green };
@@ -85,13 +83,10 @@ fn min_configuration(game: Game) -> Sample {
     })
 }
 
-fn power_of_minimum_set(games: Vec<Game>) -> u32 {
-    let mut ret_val = 0;
-    for game in games {
-        let min_config = min_configuration(game);
-        ret_val += min_config.red * min_config.green * min_config.blue;
-    }
-    ret_val
+fn power_of_minimum_set(games: &Vec<Game>) -> u32 {
+    games.iter()
+        .map(|game| min_configuration(game))
+        .fold(0, |acc, config| acc + config.red * config.green * config.blue)
 }
 
 #[cfg(test)]
@@ -101,7 +96,7 @@ mod tests {
     #[test]
     fn sample_power_of_mins() {
         let games = load_games("./src/resources/day02_simple.txt");
-        let value = power_of_minimum_set(games);
+        let value = power_of_minimum_set(&games);
         
         print!("Value is {}", value);
         assert_eq!(value, 2286);
@@ -110,7 +105,7 @@ mod tests {
     #[test]
     fn power_of_mins() {
         let games = load_games("./src/resources/day02_input.txt");
-        let value = power_of_minimum_set(games);
+        let value = power_of_minimum_set(&games);
         
         print!("Value is {}", value);
     }
@@ -123,7 +118,7 @@ mod tests {
             blue: 14
         };
         let games = load_games("./src/resources/day02_simple.txt");
-        let sum = id_sum_of_possible_games(configuration, games);
+        let sum = id_sum_of_possible_games(&configuration, &games);
         
         print!("Sum is {}", sum);
         assert_eq!(sum, 8);
@@ -137,7 +132,7 @@ mod tests {
             blue: 14
         };
         let games = load_games("./src/resources/day02_input.txt");
-        let sum = id_sum_of_possible_games(configuration, games);
+        let sum = id_sum_of_possible_games(&configuration, &games);
         
         print!("Sum is {}", sum);
     }
