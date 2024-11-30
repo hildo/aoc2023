@@ -23,21 +23,20 @@ fn load_part_numbers(schematic: Vec<String>) -> Vec<u64> {
     let mut idx = 0;
     while idx < schematic.len() {
         let row = &schematic[idx];
-        for (_, [number]) in NUMBER_RE.captures_iter(row).map(|c| c.extract()) {
-            let mut start_idx = match schematic[idx].find(number) {
-                Some(position) => position,
-                None => usize::MAX
+        for c in NUMBER_RE.captures_iter(row) {
+            let unwrapped_match = c.get(0).unwrap();
+            let (number, [_]) = c.extract();
+            let start_idx = if unwrapped_match.start() > 0 {
+                unwrapped_match.start() - 1
+            } else {
+                unwrapped_match.start()
             };
-            if start_idx == usize::MAX {
-                continue;
-            }
-            let mut end_idx = start_idx + number.len() + 1;
-            if start_idx > 0 {
-                start_idx -= 1;
-            }
-            if end_idx > row.len() {
-                end_idx = row.len();
-            }
+            let end_idx = if unwrapped_match.end() < row.len() - 1 {
+                unwrapped_match.end() + 1
+            } else {
+                unwrapped_match.end()
+            };
+            
             let mut lines_to_check:Vec<&str> = Vec::new();
             if idx > 0 {
                 lines_to_check.push(&schematic[idx-1][start_idx..end_idx]);
@@ -93,18 +92,7 @@ mod tests {
         let sum = part_numbers.iter()
             .fold(0, |acc, part_number| acc + part_number);
         println!("sum is {}", sum);
-    }
-
-    #[test]
-    fn test_part_numbers_one_at_a_time() {
-        let schematic = vec![
-            String::from("...788.............................54.........501...........555.........270.................................521......893...................."),
-            String::from("..../..*963........................*..860......................*....53...../.....................52.................&....347........428*522.")
-        ];
-        let part_numbers = load_part_numbers(schematic);
-        for part_number in part_numbers {
-            println!("{}", part_number);
-        }
+        assert_eq!(sum, 554003);
     }
 
 
